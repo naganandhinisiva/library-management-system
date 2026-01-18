@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Library Management System</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+  <h1>📚 Library Management System</h1>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+  <div>
+    {% for category, message in messages %}
+      <p style="color: {% if category=='success' %}green{% else %}red{% endif %};">{{ message }}</p>
+    {% endfor %}
+  </div>
+  {% endif %}
+  {% endwith %}
+
+  {% if edit_mode %}
+  <h2>Edit Book</h2>
+  <form method="POST" action="{{ url_for('edit_book', id=book._id) }}">
+    <label>Title:</label><input type="text" name="title" value="{{ book.title }}" required><br>
+    <label>Author:</label><input type="text" name="author" value="{{ book.author }}"><br>
+    <label>ISBN:</label><input type="text" name="isbn" value="{{ book.isbn }}"><br>
+    <label>Year:</label><input type="text" name="year" value="{{ book.year }}"><br>
+    <label>Copies:</label><input type="number" name="copies" value="{{ book.copies }}"><br>
+    <button type="submit">Update Book</button>
+    <a href="{{ url_for('index') }}">Cancel</a>
+  </form>
+
+  {% elif view_mode %}
+  <h2>View Book Details</h2>
+  <p><strong>Title:</strong> {{ book.title }}</p>
+  <p><strong>Author:</strong> {{ book.author }}</p>
+  <p><strong>ISBN:</strong> {{ book.isbn }}</p>
+  <p><strong>Year:</strong> {{ book.year }}</p>
+  <p><strong>Copies:</strong> {{ book.copies }}</p>
+  <a href="{{ url_for('index') }}">Back</a>
+
+  {% else %}
+  <h2>Add New Book</h2>
+  <form method="POST" action="{{ url_for('add_book') }}">
+    <label>Title:</label><input type="text" name="title" required><br>
+    <label>Author:</label><input type="text" name="author"><br>
+    <label>ISBN:</label><input type="text" name="isbn"><br>
+    <label>Year:</label><input type="text" name="year"><br>
+    <label>Copies:</label><input type="number" name="copies" value="1"><br>
+    <button type="submit">Add Book</button>
+  </form>
+
+  <h2>All Books</h2>
+  <table border="1" cellpadding="8">
+    <tr>
+      <th>Title</th><th>Author</th><th>ISBN</th><th>Year</th><th>Copies</th><th>Actions</th>
+    </tr>
+    {% for b in books %}
+    <tr>
+      <td>{{ b.title }}</td>
+      <td>{{ b.author }}</td>
+      <td>{{ b.isbn }}</td>
+      <td>{{ b.year }}</td>
+      <td>{{ b.copies }}</td>
+      <td>
+        <a href="{{ url_for('view_book', id=b._id) }}">View</a> |
+        <a href="{{ url_for('edit_book', id=b._id) }}">Edit</a> |
+        <a href="{{ url_for('delete_book', id=b._id) }}" onclick="return confirm('Delete this book?');">Delete</a>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% endif %}
+</body>
+</html>
